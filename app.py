@@ -18,6 +18,9 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# =========================================================================
+# 🎨 DISEÑO E INYECCIÓN DE CSS PARA CONTROL TOTAL DE COLORES (ANTI-MODO OSCURO)
+# =========================================================================
 st.markdown(
     """
 <style>
@@ -29,6 +32,7 @@ st.markdown(
     footer {visibility: hidden;}
     header {visibility: hidden;}
 
+    /* Fondo general de la aplicación */
     .stApp {
         background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 30%, #f5f7fa 70%, #ffffff 100%);
     }
@@ -38,16 +42,46 @@ st.markdown(
         padding-bottom: 2rem;
     }
 
-    /* =========================================================================
-       💥 CONFIGURACIÓN ANTIBUG DE COLORES (Para evitar textos invisibles en Modo Oscuro)
-       ========================================================================= */
-    
-    /* Forzar texto oscuro en párrafos, textos normales, labels y captions del cuerpo general */
-    .stApp p, .stApp label, .stApp span:not(.emoji), .stApp small {
+    /* -------------------------------------------------------------------------
+       💥 ÁREA PRINCIPAL (TEXTOS OSCUROS OBLIGATORIOS)
+       ------------------------------------------------------------------------- */
+    [data-testid="stMain"] p, 
+    [data-testid="stMain"] label, 
+    [data-testid="stMain"] span:not(.emoji), 
+    [data-testid="stMain"] small,
+    [data-testid="stHeader"] * {
         color: #1f2937 !important;
     }
 
-    /* Contenedores translúcidos tipo vidrio */
+    /* -------------------------------------------------------------------------
+       🌌 BARRA LATERAL (FONDO OSCURO Y TEXTOS CLAROS OBLIGATORIOS)
+       ------------------------------------------------------------------------- */
+    [data-testid="stSidebar"] {
+        background-color: #1f2937 !important;
+    }
+    
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] span,
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] h4,
+    [data-testid="stSidebar"] h5,
+    [data-testid="stSidebar"] h6,
+    [data-testid="stSidebar"] small {
+        color: #f3f4f6 !important;
+    }
+
+    /* Atenuación para textos explicativos (st.caption) en la barra lateral */
+    [data-testid="stSidebar"] .stCaption, 
+    [data-testid="stSidebar"] [data-testid="stCaptionContainer"] {
+        color: #9ca3af !important;
+    }
+
+    /* -------------------------------------------------------------------------
+       📦 TARJETAS, CONTENEDORES Y ALERTAS
+       ------------------------------------------------------------------------- */
     div[data-testid="stImage"], div[data-testid="stAlert"], div.stAlert,
     div.stInfo, div.stWarning, div.stError, div.stSuccess {
         background: rgba(255, 255, 255, 0.85) !important;
@@ -59,20 +93,49 @@ st.markdown(
         padding: 1.2rem;
     }
     
-    /* Forzar de forma ultra estricta texto oscuro dentro de CUALQUIER alerta (Success, Warning, Info) */
+    /* Forzar texto legible en alertas dentro del área clara */
     div[data-testid="stAlert"] *, div.stAlert *, .stAlert p {
         color: #1f2937 !important;
         font-weight: 500 !important;
     }
 
-    /* Forzar de forma ultra estricta que las leyendas/captions abajo de las tarjetas se vean grises oscuras */
+    /* Leyendas de las imágenes */
     [data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] *, .stCaption, .stCaption * {
         color: #4b5563 !important;
         font-weight: 500 !important;
         font-size: 0.88rem !important;
     }
 
-    /* Asegurar que los botones principales sigan teniendo texto BLANCO */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(16px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+        padding: 1.5rem;
+    }
+
+    /* Tarjetas de métricas (Resultados) */
+    .mini-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 1.2rem 0.8rem;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    }
+    .mini-card .emoji { font-size: 2.2rem; display: block; margin-bottom: 0.3rem; }
+    .mini-card .mlabel { font-size: 0.8rem; font-weight: 700; color: #4b5563 !important; text-transform: uppercase; }
+    .mini-card .mvalue { font-size: 1.1rem; font-weight: 700; color: #111827 !important; }
+    .mini-card.green { border-top: 3px solid #22c55e; }
+    .mini-card.blue { border-top: 3px solid #3b82f6; }
+    .mini-card.orange { border-top: 3px solid #f97316; }
+
+    /* -------------------------------------------------------------------------
+       🔘 BOTONES Y COMPONENTES NATIVOS DE STREAMLIT
+       ------------------------------------------------------------------------- */
+    /* Botón Principal (Texto Blanco) */
     .stButton>button {
         border-radius: 40px;
         padding: 0.6rem 1.8rem;
@@ -91,103 +154,44 @@ st.markdown(
         transform: translateY(-3px);
         box-shadow: 0 8px 25px rgba(67, 233, 123, 0.4);
     }
-    .stButton>button:active {
-        transform: translateY(0);
-    }
 
-    /* Botones secundarios (Texto gris oscuro) */
+    /* Botón Secundario (Texto Oscuro) */
     div.stButton > button[kind="secondary"] {
-        background: rgba(255,255,255,0.7);
+        background: rgba(255, 255, 255, 0.7);
         color: #333333 !important;
-        border: 1px solid rgba(255,255,255,0.4);
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border: 1px solid rgba(255, 255, 255, 0.4);
     }
     div.stButton > button[kind="secondary"] * {
         color: #333333 !important;
     }
-    div.stButton > button[kind="secondary"]:hover {
-        background: rgba(255,255,255,0.9);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
 
-    /* Selector circular (Radio) */
+    /* Selector Radio (Subir imagen / Usar cámara) */
     .stRadio > div {
         gap: 1rem;
         justify-content: center;
-        background: rgba(255,255,255,0.6);
+        background: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(8px);
         border-radius: 40px;
         padding: 0.5rem 1.2rem;
-        border: 1px solid rgba(255,255,255,0.3);
+        border: 1px solid rgba(255, 255, 255, 0.4);
         display: inline-flex;
-        margin: 0 auto;
-    }
-    div[data-testid="stRadio"] {
-        display: flex;
-        justify-content: center;
     }
     .stRadio label, .stRadio label span {
         font-weight: 600 !important;
-        font-size: 0.95rem;
-        padding: 0.3rem 0.8rem;
-        border-radius: 30px;
-        transition: all 0.2s;
         color: #1f2937 !important;
     }
 
-    /* Subidor de archivos */
+    /* Área Dropzone de Archivos */
     .stFileUploader > div {
         border-radius: 16px;
         border: 2px dashed rgba(67, 233, 123, 0.4);
-        background: rgba(255,255,255,0.5);
-        backdrop-filter: blur(8px);
+        background: rgba(255, 255, 255, 0.6);
         padding: 0.5rem;
-        transition: border-color 0.3s;
-    }
-    .stFileUploader > div:hover {
-        border-color: rgba(67, 233, 123, 0.8);
     }
 
-    .stAlert { text-align: center; }
-
-    .glass-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
-        padding: 1.5rem;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .glass-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.18);
-    }
-
-    /* Mini tarjetas de resultados */
-    .mini-card {
-        background: rgba(255,255,255,0.65);
-        backdrop-filter: blur(10px);
-        border-radius: 16px;
-        padding: 1.2rem 0.8rem;
-        text-align: center;
-        border: 1px solid rgba(255,255,255,0.4);
-        box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-        transition: all 0.25s ease;
-        height: 100%;
-    }
-    .mini-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-    }
-    .mini-card .emoji { font-size: 2.2rem; display: block; margin-bottom: 0.3rem; }
-    .mini-card .mlabel { font-size: 0.8rem; font-weight: 700; color: #4b5563 !important; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; }
-    .mini-card .mvalue { font-size: 1.1rem; font-weight: 700; color: #111827 !important; }
-    .mini-card.green { border-top: 3px solid #22c55e; }
-    .mini-card.blue { border-top: 3px solid #3b82f6; }
-    .mini-card.orange { border-top: 3px solid #f97316; }
-
+    /* -------------------------------------------------------------------------
+       TITULARES
+       ------------------------------------------------------------------------- */
     .title-glow {
         text-align: center;
         background: linear-gradient(135deg, #2e7d32, #43a047);
@@ -196,63 +200,56 @@ st.markdown(
         background-clip: text;
         font-size: 2.8rem;
         font-weight: 800;
-        letter-spacing: -0.5px;
-        margin-bottom: 0.2rem;
     }
     .subtitle {
         text-align: center;
         font-size: 1.1rem;
         font-weight: 500;
         color: #4b5563 !important;
-        margin-top: 0;
     }
 
     hr {
         margin: 1.5rem 0;
         border: 0;
         height: 1px;
-        background: linear-gradient(to right, transparent, rgba(0,0,0,0.08), transparent);
+        background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.1), transparent);
     }
 
-    @media (max-width: 768px) {
-        .title-glow { font-size: 2rem; }
-        .subtitle { font-size: 0.95rem; }
-        .mini-card .emoji { font-size: 1.6rem; }
-        .mini-card .mvalue { font-size: 0.95rem; }
-        .glass-card { padding: 1rem; }
-        div[data-testid="column"] { min-width: 100% !important; }
-    }
+    .stAlert { text-align: center; }
 </style>
 """,
     unsafe_allow_html=True,
 )
 
+# =========================================================================
+# HEADER PRINCIPAL
+# =========================================================================
 st.markdown(
     '<div class="title-glow">🥗 NutriScan AI</div>'
     '<p class="subtitle">NutriScan AI v1.0 — Modelo Predictivo de Reconocimiento de Alimentos</p>',
     unsafe_allow_html=True,
 )
 
+# =========================================================================
+# BARRA LATERAL (SIDEBAR)
+# =========================================================================
 with st.sidebar:
-    st.markdown(
-        "<div style='background: rgba(255,255,255,0.5); backdrop-filter: blur(12px); "
-        "border-radius: 16px; padding: 1.2rem; border: 1px solid rgba(255,255,255,0.3);'>",
-        unsafe_allow_html=True
-    )
-    st.markdown("<h3 style='color: #1f2937; margin-top:0;'>🌿 Acerca de</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='margin-top: 0;'>🌿 Acerca de</h3>", unsafe_allow_html=True)
     st.caption(
         "**NutriScan AI v1.0** es un clasificador avanzado de alimentos "
         "impulsado por visión computacional."
     )
     st.divider()
-    st.markdown("<h5 style='color: #1f2937;'>📋 Categorías</h5>", unsafe_allow_html=True)
-    for emoji, items in [
+    st.markdown("<h5>📋 Categorías</h5>", unsafe_allow_html=True)
+    
+    categorias = [
         ("🍎", ["Apple Pie", "Hamburger", "French Fries", "Hot Dog", "Sushi"]),
         ("🍩", ["Donuts", "Ice Cream", "Chicken Wings", "Pizza", "Caesar Salad"]),
-    ]:
+    ]
+    for emoji, items in categorias:
         row = f"{emoji} " + " · ".join(items)
         st.markdown(
-            f"<p style='font-size: 0.85rem; line-height: 1.6; margin: 0.3rem 0; color: #1f2937;'>{row}</p>",
+            f"<p style='font-size: 0.85rem; line-height: 1.6; margin: 0.3rem 0;'>{row}</p>",
             unsafe_allow_html=True,
         )
     st.divider()
@@ -260,8 +257,10 @@ with st.sidebar:
         "No afirma reconocer alimentos fuera de este catálogo. "
         "Calorías aproximadas por porción estándar."
     )
-    st.markdown("</div>", unsafe_allow_html=True)
 
+# =========================================================================
+# COMPROBACIÓN DE MODELO
+# =========================================================================
 model_available = model_exists()
 
 if not model_available:
@@ -271,6 +270,9 @@ if not model_available:
         "`model/nutriscan_model.keras` antes de usar la aplicación."
     )
 
+# =========================================================================
+# SELECTOR DE MODO DE ENTRADA
+# =========================================================================
 st.markdown(
     "<div style='display: flex; justify-content: center; margin-bottom: 0.5rem;'>",
     unsafe_allow_html=True,
@@ -333,6 +335,9 @@ else:
     if st.session_state.cam_data:
         image_source = BytesIO(base64.b64decode(st.session_state.cam_data))
 
+# =========================================================================
+# LÓGICA DE DETECCIÓN Y PROCESAMIENTO
+# =========================================================================
 if image_source is not None:
     try:
         img_rgb, img_array = load_and_preprocess_image(image_source)
@@ -341,7 +346,7 @@ if image_source is not None:
 
         with left_col:
             st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
-            st.image(img_rgb, caption="Vista previa", use_container_width=True)
+            st.image(img_rgb, caption="Vista previa de la imagen", use_container_width=True)
             if input_mode == "Usar cámara":
                 if st.button("📸 Tomar otra foto", type="secondary", use_container_width=True):
                     st.session_state.cam_data = None
@@ -361,7 +366,7 @@ if image_source is not None:
                 calorias_str = f"{calorias} kcal" if calorias else "N/A"
 
                 st.markdown(
-                    "<h3 style='text-align:center;margin:0 0 1.2rem 0;font-weight:700;color:#333;'>📊 Resultado del Análisis</h3>",
+                    "<h3 style='text-align: center; margin: 0 0 1.2rem 0; font-weight: 700; color: #1f2937;'>📊 Resultado del Análisis</h3>",
                     unsafe_allow_html=True,
                 )
 
@@ -397,7 +402,7 @@ if image_source is not None:
                 if conf_pct < 60:
                     st.warning(
                         f"⚠️ Confianza baja ({conf_pct:.1f}%). "
-                        "El resultado puede no ser confiable. "
+                        "El resultado puede no ser exacto. "
                         "Verifica manualmente el alimento."
                     )
                 else:
