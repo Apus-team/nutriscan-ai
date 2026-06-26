@@ -38,15 +38,29 @@ st.markdown(
         padding-bottom: 2rem;
     }
 
+    /* CONTENEDORES Y ALERTAS: Forzamos color de texto oscuro para que sea legible sobre el fondo blanco */
     div[data-testid="stImage"], div[data-testid="stAlert"], div.stAlert,
     div.stInfo, div.stWarning, div.stError, div.stSuccess {
-        background: rgba(255, 255, 255, 0.75) !important;
+        background: rgba(255, 255, 255, 0.85) !important;
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-radius: 20px !important;
         border: 1px solid rgba(255, 255, 255, 0.4);
         box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
         padding: 1.2rem;
+    }
+    
+    /* Corrección del texto invisible dentro de las alertas de Streamlit */
+    div[data-testid="stAlert"] p, div.stAlert p, div[data-testid="stAlert"] *, div.stAlert * {
+        color: #1f2937 !important;
+        font-weight: 500;
+    }
+
+    /* Corrección para los textos secundarios (Captions) que se veían transparentes */
+    .stCaption, [data-testid="stCaptionContainer"], small {
+        color: #4b5563 !important;
+        font-weight: 500;
+        font-size: 0.88rem !important;
     }
 
     .stButton>button {
@@ -147,8 +161,8 @@ st.markdown(
         box-shadow: 0 8px 24px rgba(0,0,0,0.1);
     }
     .mini-card .emoji { font-size: 2.2rem; display: block; margin-bottom: 0.3rem; }
-    .mini-card .mlabel { font-size: 0.8rem; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; }
-    .mini-card .mvalue { font-size: 1.1rem; font-weight: 700; color: #222; }
+    .mini-card .mlabel { font-size: 0.8rem; font-weight: 700; color: #4b5563; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; }
+    .mini-card .mvalue { font-size: 1.1rem; font-weight: 700; color: #111827; }
     .mini-card.green { border-top: 3px solid #22c55e; }
     .mini-card.blue { border-top: 3px solid #3b82f6; }
     .mini-card.orange { border-top: 3px solid #f97316; }
@@ -168,7 +182,7 @@ st.markdown(
         text-align: center;
         font-size: 1.1rem;
         font-weight: 500;
-        color: #666;
+        color: #4b5563;
         margin-top: 0;
     }
 
@@ -199,9 +213,11 @@ st.markdown(
 )
 
 with st.sidebar:
+    # CORREGIDO: Se añadió unsafe_allow_html=True a la apertura del div del contenedor del sidebar
     st.markdown(
         "<div style='background: rgba(255,255,255,0.5); backdrop-filter: blur(12px); "
-        "border-radius: 16px; padding: 1.2rem; border: 1px solid rgba(255,255,255,0.3);'>"
+        "border-radius: 16px; padding: 1.2rem; border: 1px solid rgba(255,255,255,0.3);'>",
+        unsafe_allow_html=True
     )
     st.markdown("### 🌿 Acerca de")
     st.caption(
@@ -216,7 +232,7 @@ with st.sidebar:
     ]:
         row = f"{emoji} " + " · ".join(items)
         st.markdown(
-            f"<p style='font-size: 0.85rem; line-height: 1.6; margin: 0.3rem 0;'>{row}</p>",
+            f"<p style='font-size: 0.85rem; line-height: 1.6; margin: 0.3rem 0; color: #1f2937;'>{row}</p>",
             unsafe_allow_html=True,
         )
     st.divider()
