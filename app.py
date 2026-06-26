@@ -38,7 +38,16 @@ st.markdown(
         padding-bottom: 2rem;
     }
 
-    /* CONTENEDORES Y ALERTAS: Forzamos color de texto oscuro para que sea legible sobre el fondo blanco */
+    /* =========================================================================
+       💥 CONFIGURACIÓN ANTIBUG DE COLORES (Para evitar textos invisibles en Modo Oscuro)
+       ========================================================================= */
+    
+    /* Forzar texto oscuro en párrafos, textos normales, labels y captions del cuerpo general */
+    .stApp p, .stApp label, .stApp span:not(.emoji), .stApp small {
+        color: #1f2937 !important;
+    }
+
+    /* Contenedores translúcidos tipo vidrio */
     div[data-testid="stImage"], div[data-testid="stAlert"], div.stAlert,
     div.stInfo, div.stWarning, div.stError, div.stSuccess {
         background: rgba(255, 255, 255, 0.85) !important;
@@ -50,19 +59,20 @@ st.markdown(
         padding: 1.2rem;
     }
     
-    /* Corrección del texto invisible dentro de las alertas de Streamlit */
-    div[data-testid="stAlert"] p, div.stAlert p, div[data-testid="stAlert"] *, div.stAlert * {
+    /* Forzar de forma ultra estricta texto oscuro dentro de CUALQUIER alerta (Success, Warning, Info) */
+    div[data-testid="stAlert"] *, div.stAlert *, .stAlert p {
         color: #1f2937 !important;
-        font-weight: 500;
+        font-weight: 500 !important;
     }
 
-    /* Corrección para los textos secundarios (Captions) que se veían transparentes */
-    .stCaption, [data-testid="stCaptionContainer"], small {
+    /* Forzar de forma ultra estricta que las leyendas/captions abajo de las tarjetas se vean grises oscuras */
+    [data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] *, .stCaption, .stCaption * {
         color: #4b5563 !important;
-        font-weight: 500;
+        font-weight: 500 !important;
         font-size: 0.88rem !important;
     }
 
+    /* Asegurar que los botones principales sigan teniendo texto BLANCO */
     .stButton>button {
         border-radius: 40px;
         padding: 0.6rem 1.8rem;
@@ -71,8 +81,11 @@ st.markdown(
         transition: all 0.25s ease;
         border: none;
         background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        color: #fff;
+        color: #ffffff !important;
         box-shadow: 0 4px 15px rgba(67, 233, 123, 0.3);
+    }
+    .stButton>button * {
+        color: #ffffff !important;
     }
     .stButton>button:hover {
         transform: translateY(-3px);
@@ -82,17 +95,22 @@ st.markdown(
         transform: translateY(0);
     }
 
+    /* Botones secundarios (Texto gris oscuro) */
     div.stButton > button[kind="secondary"] {
         background: rgba(255,255,255,0.7);
-        color: #333;
+        color: #333333 !important;
         border: 1px solid rgba(255,255,255,0.4);
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    div.stButton > button[kind="secondary"] * {
+        color: #333333 !important;
     }
     div.stButton > button[kind="secondary"]:hover {
         background: rgba(255,255,255,0.9);
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
 
+    /* Selector circular (Radio) */
     .stRadio > div {
         gap: 1rem;
         justify-content: center;
@@ -108,14 +126,16 @@ st.markdown(
         display: flex;
         justify-content: center;
     }
-    .stRadio label {
-        font-weight: 600;
+    .stRadio label, .stRadio label span {
+        font-weight: 600 !important;
         font-size: 0.95rem;
         padding: 0.3rem 0.8rem;
         border-radius: 30px;
         transition: all 0.2s;
+        color: #1f2937 !important;
     }
 
+    /* Subidor de archivos */
     .stFileUploader > div {
         border-radius: 16px;
         border: 2px dashed rgba(67, 233, 123, 0.4);
@@ -145,6 +165,7 @@ st.markdown(
         box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.18);
     }
 
+    /* Mini tarjetas de resultados */
     .mini-card {
         background: rgba(255,255,255,0.65);
         backdrop-filter: blur(10px);
@@ -161,8 +182,8 @@ st.markdown(
         box-shadow: 0 8px 24px rgba(0,0,0,0.1);
     }
     .mini-card .emoji { font-size: 2.2rem; display: block; margin-bottom: 0.3rem; }
-    .mini-card .mlabel { font-size: 0.8rem; font-weight: 700; color: #4b5563; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; }
-    .mini-card .mvalue { font-size: 1.1rem; font-weight: 700; color: #111827; }
+    .mini-card .mlabel { font-size: 0.8rem; font-weight: 700; color: #4b5563 !important; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; }
+    .mini-card .mvalue { font-size: 1.1rem; font-weight: 700; color: #111827 !important; }
     .mini-card.green { border-top: 3px solid #22c55e; }
     .mini-card.blue { border-top: 3px solid #3b82f6; }
     .mini-card.orange { border-top: 3px solid #f97316; }
@@ -182,7 +203,7 @@ st.markdown(
         text-align: center;
         font-size: 1.1rem;
         font-weight: 500;
-        color: #4b5563;
+        color: #4b5563 !important;
         margin-top: 0;
     }
 
@@ -213,19 +234,18 @@ st.markdown(
 )
 
 with st.sidebar:
-    # CORREGIDO: Se añadió unsafe_allow_html=True a la apertura del div del contenedor del sidebar
     st.markdown(
         "<div style='background: rgba(255,255,255,0.5); backdrop-filter: blur(12px); "
         "border-radius: 16px; padding: 1.2rem; border: 1px solid rgba(255,255,255,0.3);'>",
         unsafe_allow_html=True
     )
-    st.markdown("### 🌿 Acerca de")
+    st.markdown("<h3 style='color: #1f2937; margin-top:0;'>🌿 Acerca de</h3>", unsafe_allow_html=True)
     st.caption(
         "**NutriScan AI v1.0** es un clasificador avanzado de alimentos "
         "impulsado por visión computacional."
     )
     st.divider()
-    st.markdown("##### 📋 Categorías")
+    st.markdown("<h5 style='color: #1f2937;'>📋 Categorías</h5>", unsafe_allow_html=True)
     for emoji, items in [
         ("🍎", ["Apple Pie", "Hamburger", "French Fries", "Hot Dog", "Sushi"]),
         ("🍩", ["Donuts", "Ice Cream", "Chicken Wings", "Pizza", "Caesar Salad"]),
