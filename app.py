@@ -38,9 +38,7 @@ st.markdown(
         padding-bottom: 2rem;
     }
 
-    /* -------------------------------------------------------------------------
-       💥 ÁREA PRINCIPAL (TEXTOS OSCUROS OBLIGATORIOS)
-       ------------------------------------------------------------------------- */
+    /* AREA PRINCIPAL (TEXTOS OSCUROS OBLIGATORIOS) */
     [data-testid="stMain"] p, 
     [data-testid="stMain"] label, 
     [data-testid="stMain"] span:not(.emoji), 
@@ -49,9 +47,7 @@ st.markdown(
         color: #1f2937 !important;
     }
 
-    /* -------------------------------------------------------------------------
-       🌌 BARRA LATERAL (FONDO OSCURO Y TEXTOS CLAROS OBLIGATORIOS)
-       ------------------------------------------------------------------------- */
+    /* BARRA LATERAL (FONDO OSCURO Y TEXTOS CLAROS OBLIGATORIOS) */
     [data-testid="stSidebar"] {
         background-color: #1f2937 !important;
     }
@@ -69,15 +65,12 @@ st.markdown(
         color: #f3f4f6 !important;
     }
 
-    /* Atenuación para textos explicativos (st.caption) en la barra lateral */
     [data-testid="stSidebar"] .stCaption, 
     [data-testid="stSidebar"] [data-testid="stCaptionContainer"] {
         color: #9ca3af !important;
     }
 
-    /* -------------------------------------------------------------------------
-       📦 TARJETAS, CONTENEDORES Y ALERTAS
-       ------------------------------------------------------------------------- */
+    /* TARJETAS, CONTENEDORES Y ALERTAS */
     div[data-testid="stImage"], div[data-testid="stAlert"], div.stAlert,
     div.stInfo, div.stWarning, div.stError, div.stSuccess {
         background: rgba(255, 255, 255, 0.85) !important;
@@ -89,13 +82,11 @@ st.markdown(
         padding: 1.2rem;
     }
     
-    /* Forzar texto legible en alertas dentro del área clara */
     div[data-testid="stAlert"] *, div.stAlert *, .stAlert p {
         color: #1f2937 !important;
         font-weight: 500 !important;
     }
 
-    /* Leyendas de las imágenes */
     [data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] *, .stCaption, .stCaption * {
         color: #4b5563 !important;
         font-weight: 500 !important;
@@ -111,7 +102,7 @@ st.markdown(
         padding: 1.5rem;
     }
 
-    /* Tarjetas de métricas (Resultados) */
+    /* Tarjetas de métricas */
     .mini-card {
         background: rgba(255, 255, 255, 0.7);
         backdrop-filter: blur(10px);
@@ -128,10 +119,7 @@ st.markdown(
     .mini-card.blue { border-top: 3px solid #3b82f6; }
     .mini-card.orange { border-top: 3px solid #f97316; }
 
-    /* -------------------------------------------------------------------------
-       🔘 BOTONES Y COMPONENTES NATIVOS DE STREAMLIT
-       ------------------------------------------------------------------------- */
-    /* Botón Principal */
+    /* BOTONES Y COMPONENTES NATIVOS */
     .stButton>button {
         border-radius: 40px;
         padding: 0.6rem 1.8rem;
@@ -149,15 +137,6 @@ st.markdown(
         box-shadow: 0 8px 25px rgba(67, 233, 123, 0.4);
     }
 
-    /* Botón Secundario */
-    div.stButton > button[kind="secondary"] {
-        background: rgba(255, 255, 255, 0.7);
-        color: #333333 !important;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-    }
-    div.stButton > button[kind="secondary"] * { color: #333333 !important; }
-
-    /* Selector Radio (Subir imagen / Usar cámara) */
     .stRadio > div {
         gap: 1rem;
         justify-content: center;
@@ -173,7 +152,6 @@ st.markdown(
         color: #1f2937 !important;
     }
 
-    /* Área Dropzone e Input de cámara nativo */
     .stFileUploader > div, .stCameraInput > div {
         border-radius: 16px;
         border: 2px dashed rgba(67, 233, 123, 0.4);
@@ -181,12 +159,10 @@ st.markdown(
         padding: 0.5rem;
     }
 
-    /* Ajustar estilos específicos de la cámara nativa para evitar textos invisibles */
     .stCameraInput span, .stCameraInput button {
         color: #1f2937 !important;
     }
 
-    /* Titulares */
     .title-glow {
         text-align: center;
         background: linear-gradient(135deg, #2e7d32, #43a047);
@@ -202,15 +178,6 @@ st.markdown(
         font-weight: 500;
         color: #4b5563 !important;
     }
-
-    hr {
-        margin: 1.5rem 0;
-        border: 0;
-        height: 1px;
-        background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.1), transparent);
-    }
-
-    .stAlert { text-align: center; }
 </style>
 """,
     unsafe_allow_html=True,
@@ -284,7 +251,6 @@ if input_mode == "Subir imagen":
     if uploaded_file is not None:
         image_source = uploaded_file
 else:
-    # Uso del componente de cámara nativo de Streamlit (Seguro y Estable)
     cam_file = st.camera_input("Toma una foto de tu platillo")
     if cam_file is not None:
         image_source = cam_file
@@ -309,58 +275,76 @@ if image_source is not None:
                     model = load_model()
                     class_idx, confidence = predict(model, img_array)
 
-                alimento = get_label(class_idx)
-                calorias = get_calories(alimento)
                 conf_pct = confidence * 100
-                alimento_clean = alimento.replace("_", " ").title()
-                calorias_str = f"{calorias} kcal" if calorias else "N/A"
 
-                st.markdown(
-                    "<h3 style='text-align: center; margin: 0 0 1.2rem 0; font-weight: 700; color: #1f2937;'>📊 Resultado del Análisis</h3>",
-                    unsafe_allow_html=True,
-                )
-
-                mc1, mc2, mc3 = st.columns(3, gap="small")
-                with mc1:
+                # -----------------------------------------------------------------
+                # FILTRO DE VALIDACIÓN: ¿Es un objeto o foto sin relación con comida?
+                # -----------------------------------------------------------------
+                if conf_pct < 50.0:
                     st.markdown(
-                        f"<div class='mini-card green'>"
-                        f"<span class='emoji'>🥘</span>"
-                        f"<div class='mlabel'>Alimento</div>"
-                        f"<div class='mvalue'>{alimento_clean}</div>"
-                        f"</div>",
+                        "<h3 style='text-align: center; margin-top: 2rem; font-weight: 700; color: #dc2626;'>🔍 Alimento No Detectado</h3>",
                         unsafe_allow_html=True,
                     )
-                with mc2:
-                    st.markdown(
-                        f"<div class='mini-card blue'>"
-                        f"<span class='emoji'>🎯</span>"
-                        f"<div class='mlabel'>Confianza</div>"
-                        f"<div class='mvalue'>{conf_pct:.1f}%</div>"
-                        f"</div>",
-                        unsafe_allow_html=True,
+                    st.error(
+                        "❌ **No se encontró ningún alimento en la imagen.**\n\n"
+                        "Por favor, asegúrate de subir o tomar una foto nítida de una comida "
+                        "que pertenezca a nuestro catálogo (por ejemplo: Pizza, Hamburguesa, Sushi, etc.)."
                     )
-                with mc3:
-                    st.markdown(
-                        f"<div class='mini-card orange'>"
-                        f"<span class='emoji'>🔥</span>"
-                        f"<div class='mlabel'>Calorías</div>"
-                        f"<div class='mvalue'>{calorias_str}</div>"
-                        f"</div>",
-                        unsafe_allow_html=True,
-                    )
-
-                if conf_pct < 60:
-                    st.warning(
-                        f"⚠️ Confianza baja ({conf_pct:.1f}%). "
-                        "El resultado puede no ser exacto. "
-                        "Verifica manualmente el alimento."
+                    st.info(
+                        "💡 *Consejo: Evita tomarle fotos a personas, objetos del entorno o capturas "
+                        "con mala iluminación.*"
                     )
                 else:
-                    st.success("✅ Alimento detectado con alta confianza.")
+                    # Si pasa la validación, muestra los resultados normalmente
+                    alimento = get_label(class_idx)
+                    calorias = get_calories(alimento)
+                    alimento_clean = alimento.replace("_", " ").title()
+                    calorias_str = f"{calorias} kcal" if calorias else "N/A"
+
+                    st.markdown(
+                        "<h3 style='text-align: center; margin: 0 0 1.2rem 0; font-weight: 700; color: #1f2937;'>📊 Resultado del Análisis</h3>",
+                        unsafe_allow_html=True,
+                    )
+
+                    mc1, mc2, mc3 = st.columns(3, gap="small")
+                    with mc1:
+                        st.markdown(
+                            f"<div class='mini-card green'>"
+                            f"<span class='emoji'>🥘</span>"
+                            f"<div class='mlabel'>Alimento</div>"
+                            f"<div class='mvalue'>{alimento_clean}</div>"
+                            f"</div>",
+                            unsafe_allow_html=True,
+                        )
+                    with mc2:
+                        st.markdown(
+                            f"<div class='mini-card blue'>"
+                            f"<span class='emoji'>🎯</span>"
+                            f"<div class='mlabel'>Confianza</div>"
+                            f"<div class='mvalue'>{conf_pct:.1f}%</div>"
+                            f"</div>",
+                            unsafe_allow_html=True,
+                        )
+                    with mc3:
+                        st.markdown(
+                            f"<div class='mini-card orange'>"
+                            f"<span class='emoji'>🔥</span>"
+                            f"<div class='mlabel'>Calorías</div>"
+                            f"<div class='mvalue'>{calorias_str}</div>"
+                            f"</div>",
+                            unsafe_allow_html=True,
+                        )
+
+                    if conf_pct < 65:
+                        st.warning(
+                            f"⚠️ Confianza moderada ({conf_pct:.1f}%). "
+                            "El resultado podría variar ligeramente."
+                        )
+                    else:
+                        st.success("✅ Alimento detectado con alta confianza.")
 
                 st.caption(
-                    "Nota: Solo reconoce alimentos dentro de su catálogo entrenado. "
-                    "Las calorías son aproximadas por porción estándar."
+                    "Nota: Las calorías son aproximadas por porción estándar basadas en el catálogo entrenado."
                 )
             else:
                 st.error(
